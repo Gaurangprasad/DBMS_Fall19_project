@@ -1,14 +1,14 @@
 DROP TABLE IF EXISTS ADULT_ARRESTS;
 
-DROP TABLE  IF EXISTS  CITY_ZIP_MAP;
-DROP TABLE  IF EXISTS  LIQUOR_AGENCY;
-DROP TABLE  IF EXISTS LICENSE_TYPES;
-DROP TABLE  IF EXISTS LIQUOR_LICENSE;
+DROP TABLE IF EXISTS CITY_ZIP_MAP;
+DROP TABLE IF EXISTS LIQUOR_AGENCY;
+DROP TABLE IF EXISTS LICENSE_TYPES;
+DROP TABLE IF EXISTS LIQUOR_LICENSE;
 
-DROP TABLE  IF EXISTS  HEALTH_DEPT_COUNTY_MAP;
+DROP TABLE  IF EXISTS HEALTH_DEPT_COUNTY_MAP;
 DROP TABLE  IF EXISTS FOOD_SERVICE_VIOLATIONS;
-DROP TABLE  IF EXISTS  FOOD_SERVICE_OPERATOR;
-DROP TABLE  IF EXISTS  FOOD_SERVICE_INSPECTIONS;
+DROP TABLE  IF EXISTS FOOD_SERVICE_OPERATOR;
+DROP TABLE  IF EXISTS FOOD_SERVICE_INSPECTIONS;
 
 DROP TABLE  IF EXISTS UNEMPLOYMENT_BENEFICIARIES;
 
@@ -30,23 +30,6 @@ CREATE TABLE ADULT_ARRESTS(
 
 -- Liquor Authority Quarterly List
 
-CREATE TABLE LIQUOR_LICENSE(
-  county varchar(255),
-  license_serial_no int not null,
-  license_type_code varchar(5) REFERENCES license_types(license_type_code),
-  premise_name varchar(20),
-  doing_business_as varchar(50),
-  address varchar(255),
-  zipcode int REFERENCES CITY_ZIP_MAP(zip),
-  latitude  numeric(10,6) not null,
-  longitude numeric(10,6) not null,
-  issue_date date,
-  effective_date date,
-  expiration_date date,
-  license_certificate_number varchar(50),
-  PRIMARY KEY(license_serial_no)
-);
-
 CREATE TABLE CITY_ZIP_MAP(
   zip int,
   city varchar(50),
@@ -67,6 +50,22 @@ CREATE TABLE LICENSE_TYPES(
   PRIMARY KEY(license_type_code)
 );
 
+CREATE TABLE LIQUOR_LICENSE(
+  county varchar(255),
+  license_serial_no int not null,
+  license_type_code varchar(5) REFERENCES license_types(license_type_code),
+  premise_name varchar(20),
+  doing_business_as varchar(50),
+  address varchar(255),
+  zipcode int REFERENCES CITY_ZIP_MAP(zip),
+  latitude  numeric(10,6) not null,
+  longitude numeric(10,6) not null,
+  issue_date date,
+  effective_date date,
+  expiration_date date,
+  license_certificate_number varchar(50),
+  PRIMARY KEY(license_serial_no)
+);
 --  Food Service Establishments
 
 CREATE TABLE FOOD_SERVICE_VIOLATIONS(
