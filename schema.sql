@@ -23,6 +23,7 @@ CREATE TABLE ADULT_ARRESTS(
   dwi_felony int,
   other_felony int,
   drug_misdemeanor int,
+  dwi_misdemeanor int,
   property_misdemeanor int,
   other_misdemeanor int,
   PRIMARY KEY (county, year)
