@@ -1,14 +1,15 @@
 DROP TABLE IF EXISTS ADULT_ARRESTS;
 
-DROP TABLE IF EXISTS CITY_ZIP_MAP;
-DROP TABLE IF EXISTS LIQUOR_AGENCY;
-DROP TABLE IF EXISTS LICENSE_TYPES;
-DROP TABLE IF EXISTS LIQUOR_LICENSE;
+DROP TABLE IF EXISTS CITY_ZIP_MAP CASCADE;
+DROP TABLE IF EXISTS LIQUOR_AGENCY CASCADE;
+DROP TABLE IF EXISTS LICENSE_TYPES CASCADE;
+DROP TABLE IF EXISTS LIQUOR_LICENSE CASCADE;
+
 
 DROP TABLE  IF EXISTS HEALTH_DEPT_COUNTY_MAP;
-DROP TABLE  IF EXISTS FOOD_SERVICE_VIOLATIONS;
-DROP TABLE  IF EXISTS FOOD_SERVICE_OPERATOR;
-DROP TABLE  IF EXISTS FOOD_SERVICE_INSPECTIONS;
+DROP TABLE  IF EXISTS FOOD_SERVICE_OPERATOR CASCADE;
+DROP TABLE  IF EXISTS FOOD_SERVICE_INSPECTIONS CASCADE;
+DROP TABLE IF EXISTS  FOOD_SERVICE_VIOLATIONS CASCADE;
 
 DROP TABLE  IF EXISTS UNEMPLOYMENT_BENEFICIARIES;
 
@@ -68,9 +69,11 @@ CREATE TABLE LIQUOR_LICENSE(
 );
 --  Food Service Establishments
 
-CREATE TABLE FOOD_SERVICE_VIOLATIONS(
+DROP TABLE IF EXISTS  food_service_violations CASCADE;
+
+CREATE TABLE food_service_violations(
   violation_item varchar(20) not null,
-  violation_description varchar(255) not null,
+  violation_description varchar(255),
   PRIMARY KEY(violation_item)
 );
 
@@ -84,21 +87,21 @@ CREATE TABLE HEALTH_DEPT_COUNTY_MAP(
 CREATE TABLE FOOD_SERVICE_OPERATOR(
     nys_health_operation_id         integer  not null,
     operation_name                 varchar(100) not null,
-    latitude                       numeric(10,6) not null,
-    longitude                      numeric(10,6) not null,
+    latitude                       numeric(10,6),
+    longitude                      numeric(10,6),
     facility_code                  varchar(10) not null,
-    facility_address               varchar(255) not null,
-    facility_municipality          varchar(100) not null,
-    facility_city                  varchar(100) not null,
-    facility_postal_zipcode        integer  not null,
+    facility_address               varchar(255),
+    facility_municipality          varchar(100),
+    facility_city                  varchar(100),
+    facility_postal_zipcode        varchar(10),
     fs_facility_state              varchar(2) not null,
-    permitted_dba                  varchar(100) not null,
-    permitted_corp_name            varchar(100) not null,
+    permitted_dba                  varchar(100),
+    permitted_corp_name            varchar(100) ,
     perm_operator_last_name        varchar(30),
     perm_operator_first_name       varchar(30),
     food_service_type              varchar(100) not null,
     food_service_description varchar(100) not null,
-    permit_expiration_date         date  not null,
+    permit_expiration_date         date ,
     PRIMARY KEY (nys_health_operation_id)
 );
 
@@ -114,8 +117,8 @@ CREATE TABLE FOOD_SERVICE_INSPECTIONS(
   total_noncritical_violations integer not null,
   nysdoh_gazetteer_1980 integer not null,
   inspection_type varchar(50) not null,
-  inspection_comments varchar(255) not null,
-  PRIMARY KEY (nys_health_operation_id, date_of_inspection)
+  inspection_comments text not null,
+  PRIMARY KEY (nys_health_operation_id, date_of_inspection,violation_item)
 );
 
 
@@ -131,4 +134,4 @@ CREATE TABLE UNEMPLOYMENT_BENEFICIARIES(
   PRIMARY KEY (year, county, month)
 );
 
--
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO test5;
