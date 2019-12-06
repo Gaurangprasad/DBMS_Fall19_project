@@ -141,8 +141,8 @@ def loadLiquorDataset():
 
 liquorDataset = threading.Thread(target=loadLiquorDataset(), args=(1,))
 arrestDataset = threading.Thread(target=loadAdultArrests(), args=(1,))
-foodServiceDataset = threading.Thread(target=loadLiquorDataset(), args=(1,))
+foodServiceDataset = threading.Thread(target=loadFoodServices(), args=(1,))
 
 liquorDataset.start()
-# arrestDataset.start()
-# foodServiceDataset.start()
+arrestDataset.start()
+foodServiceDataset.start()
