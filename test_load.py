@@ -86,14 +86,63 @@ def loadAdultArrests():
     df1 = df[['County','Year','Drug Felony','Violent Felony','DWI Felony','Other Felony','Drug Misd','DWI Misd','Property Misd','Other Misd']]
     
     df_distinct = df1.drop_duplicates(keep="first", inplace=False)
-    df_distinct.dropna()
+    df_distinct = df_distinct.dropna(how='any',axis=0) 
 
     df_distinct.columns = ['county','year','drug_felony','violent_felony','dwi_felony','other_felony','drug_misdemeanor','dwi_misdemeanor',
     'property_misdemeanor','other_misdemeanor']
     
     df_distinct.to_sql('adult_arrests', engine, schema='public',index=False, if_exists='append')
+    conn.commit()
+    print("Done")
 
 
+def loadLiquorDataset():
+    df = pd.read_csv("./Liquor_Authority_Quarterly_List_of_Active_Licenses.csv", low_memory = False)
+    cur = conn.cursor()
+    engine = create_engine('postgresql+psycopg2://test5:test5@localhost/test5')
 
-x = threading.Thread(target=loadAdultArrests(), args=(1,))
-x.start()
+    # city_zip_map Violations
+    print("Loading Liquor Table")
+
+    df1 = df[['Zip','City','State']]
+
+    df1.columns = ['zip','city','state']
+    result_df = df1.drop_duplicates(subset=['zip'])
+    result_df.to_sql('city_zip_map', engine, schema='public',index=False, if_exists='append')
+
+    #LIQUOR_AGENCY
+    print("Loading Liquor Agency")
+    df2 = df[['Agency Zone Office Number','Agency Zone Office Name']]
+    df2.columns = ['office_number','office_name']
+    df2_unique = df2.drop_duplicates(subset=['office_number'])
+    df2_unique.to_sql('liquor_agency', engine, schema='public',index=False, if_exists='append')
+    conn.commit()
+
+    #LIQUOR_LICENSE
+    print("Loading License Type")
+    df3 = df[['License Type Code','License Class Code','License Type Name']]
+    df3.columns = ['license_type_code','license_class_code','license_type_name']
+    df3_unique = df3.drop_duplicates(subset=['license_type_code'])
+    df3_unique.to_sql('license_types', engine, schema='public',index=False, if_exists='append')
+    conn.commit()
+
+    #LIQUOR_LICENSE
+    print("Loading Liquor License")
+    df4 = df[['County Name (Licensee)','License Serial Number','License Type Code','Premises Name','Doing Business As (DBA)','Actual Address of Premises (Address1)',
+    'Zip','Latitude','Longitude','License Original Issue Date','License Effective Date','License Expiration Date','License Certificate Number']]
+    df4.columns = ['county','license_serial_no','license_type_code','premise_name','doing_business_as','address','zipcode',
+    'latitude','longitude','issue_date','effective_date','expiration_date','license_certificate_number']
+    df4_unique = df4.drop_duplicates(subset=['license_serial_no'])
+    df4_unique.to_sql('liquor_license', engine, schema='public',index=False, if_exists='append')
+    conn.commit()
+
+    print("Done")
+
+
+liquorDataset = threading.Thread(target=loadLiquorDataset(), args=(1,))
+arrestDataset = threading.Thread(target=loadAdultArrests(), args=(1,))
+foodServiceDataset = threading.Thread(target=loadLiquorDataset(), args=(1,))
+
+liquorDataset.start()
+# arrestDataset.start()
+# foodServiceDataset.start()

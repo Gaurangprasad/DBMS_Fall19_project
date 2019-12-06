@@ -33,7 +33,7 @@ CREATE TABLE ADULT_ARRESTS(
 -- Liquor Authority Quarterly List
 
 CREATE TABLE CITY_ZIP_MAP(
-  zip int,
+  zip varchar(20),
   city varchar(50),
   state varchar(2),
   PRIMARY KEY(zip)  
@@ -47,7 +47,7 @@ CREATE TABLE LIQUOR_AGENCY(
 
 CREATE TABLE LICENSE_TYPES(
   license_type_code varchar(5),
-  license_class_code varchar(5),
+  license_class_code int,
   license_type_name varchar(100),
   PRIMARY KEY(license_type_code)
 );
@@ -56,12 +56,12 @@ CREATE TABLE LIQUOR_LICENSE(
   county varchar(255),
   license_serial_no int not null,
   license_type_code varchar(5) REFERENCES license_types(license_type_code),
-  premise_name varchar(20),
+  premise_name varchar(100),
   doing_business_as varchar(50),
   address varchar(255),
-  zipcode int REFERENCES CITY_ZIP_MAP(zip),
-  latitude  numeric(10,6) not null,
-  longitude numeric(10,6) not null,
+  zipcode varchar(10) REFERENCES CITY_ZIP_MAP(zip),
+  latitude  numeric(10,6),
+  longitude numeric(10,6),
   issue_date date,
   effective_date date,
   expiration_date date,
