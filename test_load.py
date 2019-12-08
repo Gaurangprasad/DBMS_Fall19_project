@@ -9,7 +9,9 @@ import psycopg2
 from sqlalchemy import create_engine
 import pandas as pd
 import threading;
-conn = psycopg2.connect("host=localhost dbname=test5 user=test5 password=test5")
+import pymongo;
+import json;
+# conn = psycopg2.connect("host=localhost dbname=test5 user=test5 password=test5")
 print("Connected to PSQL")
 # print(df.columns)
 def loadFoodServices():
@@ -138,11 +140,25 @@ def loadLiquorDataset():
 
     print("Done")
 
+def loadNoSQLData():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["dbms"]
+    mycol = mydb["insuranceBeneficiaries"]
+    with open('unemploymentBenefits.json','r') as data_file:    
+        data_json = json.load(data_file)
+    #Insert Data
+    mycol.remove()
+    mycol.insert(data_json)
+      
+
+
 
 liquorDataset = threading.Thread(target=loadLiquorDataset(), args=(1,))
 arrestDataset = threading.Thread(target=loadAdultArrests(), args=(1,))
 foodServiceDataset = threading.Thread(target=loadFoodServices(), args=(1,))
+insuranceDataset = threading.Thread(target=loadNoSQLData(), args=(1,))
 
 liquorDataset.start()
 arrestDataset.start()
 foodServiceDataset.start()
+insuranceDataset.start()
