@@ -28,6 +28,8 @@ AND
 food_service_violations.violation_item = food_service_inspections.violation_item;
 
 -- Query 3
+-- Is there a corelation between food service inspections finding unhygenic conditions and property misdemanors?LOL
+
 select csm.county, cs, property_misdemanors  from (select county,sum(total_critical_violations+ total_critical_violations) as cs
 from food_service_inspections
 where
