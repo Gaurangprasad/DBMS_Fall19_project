@@ -26,3 +26,16 @@ food_service_inspections.date_of_inspection >= '01/01/2018' AND
       food_service_inspections.date_of_inspection <= '12/31/2018'
 AND
 food_service_violations.violation_item = food_service_inspections.violation_item;
+
+-- Query 3
+select csm.county, cs, property_misdemanors from (select county,sum(total_critical_violations+ total_critical_violations) as cs
+from food_service_inspections
+where
+total_critical_violations + total_noncritical_violations > 10
+AND
+date_of_inspection between '01/01/2018' AND '12/31/2018'
+GROUP BY county) as csm, (select county, sum(property_misdemeanor) as property_misdemanors from adult_arrests
+where year = 2018
+group by county
+) as ad
+where upper(csm.county) = upper(ad.county);
