@@ -11,7 +11,7 @@ import pandas as pd
 import threading;
 import pymongo;
 import json;
-# conn = psycopg2.connect("host=localhost dbname=test5 user=test5 password=test5")
+conn = psycopg2.connect("host=localhost dbname=test5 user=test5 password=test5")
 print("Connected to PSQL")
 # print(df.columns)
 def loadFoodServices():
