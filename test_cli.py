@@ -45,6 +45,27 @@ def query2():
 
 def query3():
     print("Hello")
+    start_date = input('Enter start date(DD/MM/YYYY):')
+    end_date = input('Enter end date(DD/MM/YYYY):')
+    yearOfArrest = input('Adult Arrests Year')
+    minViolations = input('Min Violations')
+    query = """
+        select csm.county, cs, property_misdemanors  from (select county,sum(total_critical_violations+ total_critical_violations) as cs
+        from food_service_inspections
+        where
+        total_critical_violations + total_noncritical_violations > '""" + minViolations + """'
+        AND
+        date_of_inspection between '""" + start_date + """' AND '""" + end_date + """'
+        AND
+        violation_item IN ('14A','12E','1B','8F','3B','23','62')
+        GROUP BY county) as csm, (select county, sum(property_misdemeanor) as property_misdemanors from adult_arrests
+        where year = '""" + yearOfArrest + """'
+        group by county
+        ) as ad
+        where upper(csm.county) = upper(ad.county);
+        """
+    print(fd_vio.directQuery(query))
+
 
 if __name__ == "__main__":
     
@@ -69,7 +90,7 @@ if __name__ == "__main__":
         queryNumber = int(parser['query'])
         if(queryNumber == 1 ):
             query1()
-        elif(queryNumber == 2 ):
+        elif(queryNumber == 2):
             query2()
         elif(queryNumber == 3):
             query3()
