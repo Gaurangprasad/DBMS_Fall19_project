@@ -12,7 +12,7 @@ from json_structure import InsuranceData
 import psycopg2
 import psycopg2.extras
 import pandas
-
+from datetime import datetime
 # https://stackoverflow.com/a/37045601/4759033
 def validate(date_text):
     try:
