@@ -10,6 +10,7 @@ import itertools
 from psql_structure import FoodViolationData
 from json_structure import InsuranceData
 from datetime import datetime
+import pandas
 
 # https://stackoverflow.com/a/37045601/4759033
 def validate(date_text):
