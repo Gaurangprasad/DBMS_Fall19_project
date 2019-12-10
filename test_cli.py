@@ -61,6 +61,17 @@ def query3():
     end_date = input('Enter end date(DD/MM/YYYY):')
     yearOfArrest = input('Adult Arrests Year')
     minViolations = input('Min Violations')
+    license_string = input('Enter violation codes separated by a space: ')
+    lic_arr = license_string.split()
+    licQuery = ""
+    first = 1
+    for licID in lic_arr:
+        if (first == 1):
+            licQuery = "'"+ licID + "'"
+            first = 0
+        else:
+            licQuery = licQuery + ",'"+ licID + "'"
+    #  '14A','12E','1B','8F','3B','23','62'
     query = """
         select csm.county, cs, property_misdemanors  from (select county,sum(total_critical_violations+ total_critical_violations) as cs
         from food_service_inspections
@@ -69,7 +80,7 @@ def query3():
         AND
         date_of_inspection between '""" + start_date + """' AND '""" + end_date + """'
         AND
-        violation_item IN ('14A','12E','1B','8F','3B','23','62')
+        violation_item IN (""" + licQuery + """)
         GROUP BY county) as csm, (select county, sum(property_misdemeanor) as property_misdemanors from adult_arrests
         where year = '""" + yearOfArrest + """'
         group by county
