@@ -9,6 +9,16 @@ import argparse
 import itertools
 from psql_structure import FoodViolationData
 from json_structure import InsuranceData
+from datetime import datetime
+
+# https://stackoverflow.com/a/37045601/4759033
+def validate(date_text):
+    try:
+        if date_text != datetime.strptime(date_text, "%Y-%m-%d").strftime('%Y-%m-%d'):
+            raise ValueError
+        return True
+    except ValueError:
+        return False
 
 def query1():
     county = input('Enter county: ')
@@ -35,7 +45,13 @@ def query1():
 
 def query2():
     start_date = input('Enter start date(DD/MM/YYYY):')
+    if(validate(start_date) == False):
+        print("Invalid date")
+        return
     end_date = input('Enter end date(DD/MM/YYYY):')
+    if(validate(end_date) == False):
+        print("Invalid date")
+        return
     query = """select liquor_license.county,date_of_inspection,food_service_violations.violation_description, liquor_license.doing_business_as
                         from food_service_operator,
                             liquor_license,
@@ -56,7 +72,6 @@ def query2():
     print(fd_vio.directQuery(query))
 
 def query3():
-    print("Hello")
     start_date = input('Enter start date(DD/MM/YYYY):')
     end_date = input('Enter end date(DD/MM/YYYY):')
     yearOfArrest = input('Adult Arrests Year')
