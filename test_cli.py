@@ -100,6 +100,8 @@ if __name__ == "__main__":
     
     # Handling command line arguments
     arg = argparse.ArgumentParser()
+    conn = psycopg2.connect("host='localhost' dbname='test5' user='test5' password='test5'")
+    cursor = conn.cursor()
     fd_vio = FoodViolationData("host='localhost' dbname='test5' user='test5' password='test5'")
     ins = InsuranceData()
     #print(ins.is_connected())
