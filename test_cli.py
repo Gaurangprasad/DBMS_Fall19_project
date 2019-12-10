@@ -20,6 +20,7 @@ def query1():
     license_types.license_type_code IN ('D','MI','CF') """
             # Looking for estabishments that have the word BUFFET in their name and are in ALBANY
     print(fd_vio.directQuery(query))
+
 def query2():
     start_date = input('Enter start date(DD/MM/YYYY):')
     end_date = input('Enter end date(DD/MM/YYYY):')
@@ -42,6 +43,9 @@ def query2():
                         """
     print(fd_vio.directQuery(query))
 
+def query3():
+    print("Hello")
+
 if __name__ == "__main__":
     
     # Handling command line arguments
@@ -62,10 +66,13 @@ if __name__ == "__main__":
         print("1. Allow user to enter county and type of business. Demonstrates a basic join and the IN operator")
     
     if(parser['query'] is not None):
-        if(int(parser['query']) == 1 ):
+        queryNumber = int(parser['query'])
+        if(queryNumber == 1 ):
             query1()
-        if(int(parser['query']) == 2 ):
+        elif(queryNumber == 2 ):
             query2()
+        elif(queryNumber == 3):
+            query3()
 
 
 
