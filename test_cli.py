@@ -73,7 +73,13 @@ def query2():
 
 def query3():
     start_date = input('Enter start date(DD/MM/YYYY):')
+    if(validate(start_date) == False):
+        print("Invalid date")
+        return
     end_date = input('Enter end date(DD/MM/YYYY):')
+    if(validate(end_date) == False):
+        print("Invalid date")
+        return
     yearOfArrest = input('Adult Arrests Year')
     minViolations = input('Min Violations')
     license_string = input('Enter violation codes separated by a space: ')
