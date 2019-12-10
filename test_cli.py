@@ -9,7 +9,8 @@ import argparse
 import itertools
 from psql_structure import FoodViolationData
 from json_structure import InsuranceData
-from datetime import datetime
+import psycopg2
+import psycopg2.extras
 import pandas
 
 # https://stackoverflow.com/a/37045601/4759033
