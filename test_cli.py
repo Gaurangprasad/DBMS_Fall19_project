@@ -24,24 +24,9 @@ def query1():
     county = input('Enter county: ')
     license_string = input('Enter license codes separated by a space: ')
     lic_arr = license_string.split()
-    licQuery = ""
-    first = 1
-    for licID in lic_arr:
-        if (first == 1):
-            licQuery = "'"+ licID + "'"
-            first = 0
-        else:
-            licQuery = licQuery + ",'"+ licID + "'"
- 
-    #'D','MI','CF'
-    
-    query = """ select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types
-            where county ilike '""" + county + """' AND
-            liquor_license.license_type_code = license_types.license_type_code
-            AND
-            license_types.license_type_code IN (""" + licQuery + """) """
-    
-    print(fd_vio.directQuery(query))
+    query = """select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types where county ilike %s AND liquor_license.license_type_code = license_types.license_type_code AND license_types.license_type_code IN %s"""
+    cursor.execute(query, (county, tuple(lic_arr)))
+    print(pandas.DataFrame(cursor.fetchall()))
 
 def query2():
     start_date = input('Enter start date(DD/MM/YYYY):')
