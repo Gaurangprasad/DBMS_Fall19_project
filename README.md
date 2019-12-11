@@ -19,4 +19,10 @@ python3 -m pip install -r requirements.txt
 3. [Food Service Establishment Inspections](https://health.data.ny.gov/Health/Food-Service-Establishment-Inspections-Beginning-2/2hcc-shji)
 4. [Unemployment Insurance Beneficiaries and Benefit Amounts Paid](https://data.ny.gov/Economic-Development/Unemployment-Insurance-Beneficiaries-and-Benefit-A/xbjp-8sra)
 
+#What each query is about
+
+##Locations with Liquor Licenses In New York State
+```
+select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types where county ilike 'ALBANY' AND liquor_license.license_type_code = license_types.license_type_code AND license_types.license_type_code IN ('D','MI','CF')
+```
 
