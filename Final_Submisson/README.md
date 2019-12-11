@@ -23,6 +23,14 @@ Batch file load.bat creates the user, database, and runs the data loading python
 3. [Food Service Establishment Inspections](https://health.data.ny.gov/Health/Food-Service-Establishment-Inspections-Beginning-2/2hcc-shji)
 4. [Unemployment Insurance Beneficiaries and Benefit Amounts Paid](https://data.ny.gov/Economic-Development/Unemployment-Insurance-Beneficiaries-and-Benefit-A/xbjp-8sra)
 
+# How to run the application?
+
+The application file is app.py. View the application arguments by doing:
+
+```
+python app.py -h
+```
+
 # What each query is about
 
 ## Locations with Liquor Licenses In New York State
