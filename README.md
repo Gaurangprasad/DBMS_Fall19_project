@@ -48,11 +48,30 @@ food_service_operator.nys_health_operation_id = food_service_inspections.nys_hea
 AND
 food_service_inspections.violation_item NOT IN ('None')
 AND
-food_service_inspections.date_of_inspection >= '2018-01-01' AND
-                        food_service_inspections.date_of_inspection <= '2018-12-31'
+food_service_inspections.date_of_inspection >= '2018-01-01' AND food_service_inspections.date_of_inspection <= '2018-12-31'
 AND
 food_service_violations.violation_item = food_service_inspections.violation_item
 AND
 liquor_license.county ilike 'Albany' 
 ```
-
+## Is there a corelation between places with food violations and property misdemanors?
+### Filters
+- Start Date for Inspection
+- End Date for Inspection
+- List of Violation Items
+- Year for Misdemanors
+```sql
+select csm.county, cs, property_misdemanors  from (select county,sum(total_critical_violations+ total_critical_violations) as cs
+        from food_service_inspections
+        where
+        total_critical_violations + total_noncritical_violations > 10
+        AND
+        date_of_inspection between '2018-01-01' AND '2018-12-31'
+        AND
+        violation_item IN ('14A','12E','1B','8F','3B','23','62')
+        GROUP BY county) as csm, (select county, sum(property_misdemeanor) as property_misdemanors from adult_arrests
+        where year = '2018'
+        group by county
+        ) as ad
+        where upper(csm.county) = upper(ad.county)
+```
