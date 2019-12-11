@@ -204,6 +204,8 @@ if __name__ == "__main__":
             query3()
         elif(queryNumber == 4):
             query4()
+        elif(queryNumber == 5):
+            query5()
         else:
             print('Invalid Query. Use --view True argument to view the queries supported by the application.')
 
