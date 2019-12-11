@@ -13,6 +13,8 @@ If you already have python3 installed, you can install all python dependencies b
 ```
 python3 -m pip install -r requirements.txt
 ```
+# Load Data
+Batch file load.bat creates the user, database, and runs the data loading python file (which loads data to local PostGres and Mongo)
 
 # What datasets we've used
 

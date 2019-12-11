@@ -15,7 +15,7 @@ conn = psycopg2.connect("host=localhost dbname=final_db user=itws_final password
 print("Connected to PSQL")
 # print(df.columns)
 def loadFoodServices():
-    df = pd.read_csv("./Data.csv")
+    df = pd.read_csv("./FoodServiceViolations_dir.csv")
     cur = conn.cursor()
     engine = create_engine('postgresql+psycopg2://itws_final:itws_final@localhost/final_db')
 
