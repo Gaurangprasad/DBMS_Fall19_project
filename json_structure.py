@@ -23,10 +23,6 @@ class InsuranceData:
             self.query.update({"County": re.compile(text, re.IGNORECASE)})
             return self
 
-        def year(self, text):
-            self.query.update({"Year": re.compile(text, re.IGNORECASE)})
-            return self
-
         def region(self, category):
             self.query.update({"Region": re.compile(category, re.IGNORECASE)})
             return self
@@ -56,7 +52,8 @@ class InsuranceData:
             return self
 
         def run(self):
-            return pandas.DataFrame(list(self.insurance.collection.find(self.query)))
+            df = pandas.DataFrame(list(self.insurance.collection.find(self.query)))
+            return df.loc[:, df.columns != '_id']
 
         def show(self):
             return self.query

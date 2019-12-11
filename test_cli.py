@@ -74,7 +74,7 @@ def query3():
     if(validate(start_date) == False):
         print("Invalid date")
         return
-    end_date = input('Enter end date(DD/MM/YYYY):')
+    end_date = input('Enter end date (DD/MM/YYYY):')
     if(validate(end_date) == False):
         print("Invalid date")
         return
@@ -110,6 +110,53 @@ def query3():
     cursor.execute(query, (minViolations, start_date, end_date, tuple(lic_arr), yearOfArrest))
     print(pandas.DataFrame(cursor.fetchall()))
 
+def query4():
+
+    searchRegionType = input("Do you wanna search by county (ex: Albany) or region (ex: Capital Region)? Enter 'county' or 'region': ")
+    baseQuery = "ins.query()"
+    if(searchRegionType.casefold() == "county"):
+        baseQuery = baseQuery + ".county("
+    elif(searchRegionType.casefold() == "region"):
+        baseQuery = baseQuery + ".region("
+    else:
+        print("Invalid Entry")
+        return
+    print()
+    regionVal = input("Enter " + searchRegionType + " to search: ")
+    baseQuery = baseQuery + "'{}')"
+            
+    year = input("Enter year: ")
+    if(validateInteger(year) == False):
+        return
+    else:
+        year = int(year)
+        if year < 1:
+            print('Invalid year')
+            return
+        elif year > 2019:
+            print('Invalid year')
+            return
+    baseQuery = baseQuery + ".year({})"
+    
+    month = input("Enter month number: ")
+    if(validateInteger(month) == False):
+        return
+    else:
+        month = int(month)
+        if month < 1:
+            print('Invalid month')
+            return
+        elif month > 12:
+            print('Invalid month')
+            return
+
+    baseQuery = baseQuery + ".month({})"
+        
+    baseQuery = baseQuery + ".run()"
+    print()
+    print()
+    print(eval(baseQuery.format(regionVal, year, month)))
+
 
 if __name__ == "__main__":
     
@@ -131,6 +178,8 @@ if __name__ == "__main__":
         print()
         print()
         print("1. Allow user to enter county and type of business. Demonstrates a basic join and the IN operator")
+        print("2. Does something")
+        print("3. Something else")
     
     if(parser['query'] is not None):
         queryNumber = int(parser['query'])
@@ -140,6 +189,10 @@ if __name__ == "__main__":
             query2()
         elif(queryNumber == 3):
             query3()
+        elif(queryNumber == 4):
+            query4()
+        else:
+            print('Invalid Query. Use --view True argument to view the queries supported by the application.')
 
 
 
