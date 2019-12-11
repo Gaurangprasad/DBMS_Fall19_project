@@ -89,3 +89,8 @@ select csm.county, cs, property_misdemanors  from (select county,sum(total_criti
         WHERE dsa2.vi is NULL
         ORDER BY dsa.county ASC ;
  ```
+
+
+#General Features
+- Validation of Inputs 
+- Protection from SQL Injection 
