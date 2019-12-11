@@ -40,22 +40,19 @@ AND license_types.license_type_code IN ('D','MI','CF')
 - End Date for Inspection
 ```sql
 select liquor_license.doing_business_as, food_service_violations.violation_description,liquor_license.county,date_of_inspection
-                    from food_service_operator,
-                        liquor_license,
-                        food_service_inspections,
-                        food_service_violations
-                    WHERE
-                    food_service_operator.operation_name = liquor_license.premise_name
-                    AND
-                    food_service_operator.nys_health_operation_id = food_service_inspections.nys_health_operation_id
-                    AND
-                    food_service_inspections.violation_item NOT IN ('None')
-                    AND
-                    food_service_inspections.date_of_inspection >= %s AND
-                        food_service_inspections.date_of_inspection <= %s
-                    AND
-                    food_service_violations.violation_item = food_service_inspections.violation_item
-                    AND
-                    liquor_license.county ilike %s 
+from food_service_operator,liquor_license,food_service_inspections, food_service_violations
+WHERE
+food_service_operator.operation_name = liquor_license.premise_name
+AND
+food_service_operator.nys_health_operation_id = food_service_inspections.nys_health_operation_id
+AND
+food_service_inspections.violation_item NOT IN ('None')
+AND
+food_service_inspections.date_of_inspection >= '2018-01-01' AND
+                        food_service_inspections.date_of_inspection <= '2018-12-31'
+AND
+food_service_violations.violation_item = food_service_inspections.violation_item
+AND
+liquor_license.county ilike 'Albany' 
 ```
 
