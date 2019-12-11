@@ -98,5 +98,6 @@ Searching MongoDB by county/ region and year.
 ## Querying PostGres + Mongo to explore relationship between arrests and unemployment in a county for a particular year.
 
 ## General Features
+- Separate connection/ interface file for PSQL and Mongo (separate from app.py)
 - Validation of Inputs 
 - Protection from SQL Injection 
