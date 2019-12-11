@@ -21,7 +21,7 @@ python3 -m pip install -r requirements.txt
 
 #What each query is about
 
-##Locations with Liquor Licenses In New York State
+## Locations with Liquor Licenses In New York State
 ### Filters
 - County
 - License Type Codes
