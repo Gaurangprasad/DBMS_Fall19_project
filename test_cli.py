@@ -178,6 +178,24 @@ def query5():
     print()
     print()
     print(eval(baseQuery.format(regionVal, year, month)))
+    
+def query6():
+    county = input("Enter county: ")
+    year = int(input("Enter year: "))
+    query = "select * from adult_arrests where county ilike %s and year = %s"
+    cursor.execute(query, (county, year))
+    adultArrdf =  pandas.DataFrame(cursor.fetchall())
+    jsonDF = ins.query().county(county).year(year).run()
+    jsonDF = jsonDF.groupby(['County'])['County', 'Beneficiaries', 'Benefits'].sum()
+    #combinedDF = adultArrdf.assign(Beneficiaries = [jsonDF.loc])
+    #print( jsonDF['Beneficiaries'])
+    #combinedDF = adultArrdf.assign(Beneficiaries = [jsonDF['Beneficiaries']])
+    #adultArrdf['Total Num. of Beneficiaries'] = jsonDF['Beneficiaries']
+    #adultArrdf['Total Benefits'] = jsonDF.loc[jsonDF['County'] == adultArrdf['0']]['Benefits']
+    #print(adultArrdf.head())
+    #print(jsonDF)
+    print(adultArrdf)
+    print(jsonDF)
 
 
 if __name__ == "__main__":
@@ -218,6 +236,8 @@ if __name__ == "__main__":
             query4()
         elif(queryNumber == 5):
             query5()
+        elif(queryNumber == 6):
+            query6()
         else:
             print('Invalid Query. Use --view True argument to view the queries supported by the application.')
 
