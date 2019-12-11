@@ -33,23 +33,25 @@ def validateInteger(inputIntString):
     
 
 def query1():
+    #Demonstrates a basic join and the IN operator"
     county = input('Enter county: ')
-    license_string = input('Enter license codes separated by a space: ')
+    license_string = input('Enter license codes separated by a space:')
+    # Sample values for breweries - 'D','MI','CF'
     lic_arr = license_string.split()
     query = """select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types where county ilike %s AND liquor_license.license_type_code = license_types.license_type_code AND license_types.license_type_code IN %s"""
     cursor.execute(query, (county, tuple(lic_arr)))
     print(pandas.DataFrame(cursor.fetchall()))
 
 def query2():
-    start_date = input('Enter start date (DD/MM/YYYY):')
+    start_date = input('Enter start date (YYYY-MM-DD):')
     if(validate(start_date) == False):
         print("Invalid date")
         return
-    end_date = input('Enter end date (DD/MM/YYYY):')
+    end_date = input('Enter end date (YYYY-MM-DD):')
     if(validate(end_date) == False):
         print("Invalid date")
         return
-    query = """select liquor_license.county,date_of_inspection,food_service_violations.violation_description, liquor_license.doing_business_as
+    query = """select liquor_license.doing_business_as, food_service_violations.violation_description,liquor_license.county,date_of_inspection
                         from food_service_operator,
                             liquor_license,
                             food_service_inspections,
@@ -70,11 +72,11 @@ def query2():
     print(pandas.DataFrame(cursor.fetchall()))
 
 def query3():
-    start_date = input('Enter start date (DD/MM/YYYY):')
+    start_date = input('Enter start date (YYYY-MM-DD):')
     if(validate(start_date) == False):
         print("Invalid date")
         return
-    end_date = input('Enter end date (DD/MM/YYYY):')
+    end_date = input('Enter end date (YYYY-MM-DD):')
     if(validate(end_date) == False):
         print("Invalid date")
         return
@@ -99,7 +101,7 @@ def query3():
         AND
         date_of_inspection between %s AND %s
         AND
-        violation_item IN (%s)
+        violation_item IN %s
         GROUP BY county) as csm, (select county, sum(property_misdemeanor) as property_misdemanors from adult_arrests
         where year = %s
         group by county
@@ -191,9 +193,12 @@ if __name__ == "__main__":
         print("Here are the list of queries supported by the application. To run a query, do python test_cli.py --query QUERY_NUM \nwhere QUERY_NUM is the number in the following list: ")
         print()
         print()
-        print("1. Allow user to enter county and type of business. Demonstrates a basic join and the IN operator")
-        print("2. Does something")
-        print("3. Something else")
+        print("1. Where can I get some alcohol around me?")
+        print("2. Restaurants that are permitted to serve alcohol and have food service violations")
+        print("3. Is there a relation between bad food and property misdemeanor?")
+        print("4. Who consistently causes 3am tummy aches?")
+        print("5. Explore unemployment around you.")
+
     
     if(parser['query'] is not None):
         queryNumber = int(parser['query'])
