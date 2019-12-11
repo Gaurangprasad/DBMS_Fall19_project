@@ -25,7 +25,7 @@ python3 -m pip install -r requirements.txt
 ### Filters
 - County
 - License Type Codes
-```
+```sql
 select premise_name,doing_business_as,address,zipcode, license_type_name 
 from liquor_license, license_types 
 where county ilike 'ALBANY' 
