@@ -10,7 +10,9 @@ Satej Sawant
 
 If you already have python3 installed, you can install all python dependencies by running:
 
+```
 python3 -m pip install -r requirements.txt
+```
 
 # What datasets we've used
 
@@ -89,8 +91,13 @@ select csm.county, cs, property_misdemanors  from (select county,sum(total_criti
         WHERE dsa2.vi is NULL
         ORDER BY dsa.county ASC ;
  ```
+## Search for unemployment informantion for a specific county or region (in New York State), year, and month.
 
+Searching MongoDB by county/ region and year.
 
-#General Features
+## Querying PostGres + Mongo to explore relationship between arrests and unemployment in a county for a particular year.
+
+## General Features
+- Separate connection/ interface file for PSQL and Mongo (separate from app.py)
 - Validation of Inputs 
 - Protection from SQL Injection 
