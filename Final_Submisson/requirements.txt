@@ -1,0 +1,7 @@
+pandas
+psycopg2
+sqlalchemy
+pymongo
+argparse
+datetime
+tabulate
