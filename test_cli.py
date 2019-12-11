@@ -111,6 +111,19 @@ def query3():
     print(pandas.DataFrame(cursor.fetchall()))
 
 def query4():
+    query = """
+    SELECT dsa.*
+FROM (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
+group by nys_health_operation_id, county) as dsa
+  LEFT JOIN (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
+group by nys_health_operation_id, county) as dsa2
+      ON dsa.county = dsa2.county AND dsa.vi < dsa2.vi
+WHERE dsa2.vi is NULL
+    """
+    cursor.execute(query)
+    print(pandas.DataFrame(cursor.fetchall()))
+    
+def query5():
 
     searchRegionType = input("Do you wanna search by county (ex: Albany) or region (ex: Capital Region)? Enter 'county' or 'region': ")
     baseQuery = "ins.query()"
