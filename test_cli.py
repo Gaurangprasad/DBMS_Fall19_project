@@ -13,6 +13,7 @@ import psycopg2
 import psycopg2.extras
 import pandas
 from datetime import datetime
+from tabulate import tabulate
 
 # https://stackoverflow.com/a/37045601/4759033
 def validate(date_text):
@@ -40,7 +41,7 @@ def query1():
     lic_arr = license_string.split()
     query = """select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types where county ilike %s AND liquor_license.license_type_code = license_types.license_type_code AND license_types.license_type_code IN %s"""
     cursor.execute(query, (county, tuple(lic_arr)))
-    print(pandas.DataFrame(cursor.fetchall()))
+    print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["Premise Name","Also Advertised As","Address","ZipCode", "License Type" ], tablefmt='fancy_grid'))
 
 def query2():
     start_date = input('Enter start date (YYYY-MM-DD):')
@@ -70,6 +71,8 @@ def query2():
                         """
     cursor.execute(query, (start_date, end_date))
     print(pandas.DataFrame(cursor.fetchall()))
+
+
 
 def query3():
     start_date = input('Enter start date (YYYY-MM-DD):')
@@ -110,7 +113,8 @@ def query3():
         """
 
     cursor.execute(query, (minViolations, start_date, end_date, tuple(lic_arr), yearOfArrest))
-    print(pandas.DataFrame(cursor.fetchall()))
+    print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["County","Total Violations", "Property Misdemeanors" ], tablefmt='fancy_grid'))
+
 
 def query4():
     query = """
@@ -124,7 +128,8 @@ def query4():
     WHERE dsa2.vi is NULL;
     """
     cursor.execute(query)
-    print(pandas.DataFrame(cursor.fetchall()))
+    print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["County","Operation Name", "NYS ID", "Total Violations"], tablefmt='fancy_grid'))
+
     
 def query5():
 
