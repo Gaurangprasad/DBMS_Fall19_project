@@ -23,6 +23,15 @@ def validate(date_text):
     except ValueError:
         return False
 
+def validateInteger(inputIntString):
+    try:
+        inputIntString = int(inputIntString)
+        return True
+    except ValueError:
+        print("^ Not an Integer value.")
+        return False
+    
+
 def query1():
     county = input('Enter county: ')
     license_string = input('Enter license codes separated by a space: ')
@@ -69,8 +78,15 @@ def query3():
     if(validate(end_date) == False):
         print("Invalid date")
         return
-    yearOfArrest = input('Adult Arrests Year')
-    minViolations = input('Min Violations')
+
+    yearOfArrest = input('Adult Arrests Year: ')
+    if(validateInteger(yearOfArrest) == False):
+        return
+    
+    minViolations = input('Min Violations: ')
+    if(validateInteger(minViolations) == False):
+        return
+    
     license_string = input('Enter violation codes separated by a space: ')
     lic_arr = license_string.split()
     
