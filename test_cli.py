@@ -125,7 +125,8 @@ def query4():
     LEFT JOIN (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
     group by nys_health_operation_id, county) as dsa2
         ON dsa.county = dsa2.county AND dsa.vi < dsa2.vi
-    WHERE dsa2.vi is NULL;
+    WHERE dsa2.vi is NULL
+    ORDER BY dsa.county ASC ;
     """
     cursor.execute(query)
     print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["County","Operation Name", "NYS ID", "Total Violations"], tablefmt='fancy_grid'))
