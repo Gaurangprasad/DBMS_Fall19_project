@@ -22,7 +22,14 @@ python3 -m pip install -r requirements.txt
 #What each query is about
 
 ##Locations with Liquor Licenses In New York State
+### Filters
+- County
+- License Type Codes
 ```
-select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types where county ilike 'ALBANY' AND liquor_license.license_type_code = license_types.license_type_code AND license_types.license_type_code IN ('D','MI','CF')
+select premise_name,doing_business_as,address,zipcode, license_type_name 
+from liquor_license, license_types 
+where county ilike 'ALBANY' 
+AND liquor_license.license_type_code = license_types.license_type_code 
+AND license_types.license_type_code IN ('D','MI','CF')
 ```
 
