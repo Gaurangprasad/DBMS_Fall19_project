@@ -113,12 +113,13 @@ def query3():
 def query4():
     query = """
     SELECT dsa.*
-FROM (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
-group by nys_health_operation_id, county) as dsa
-  LEFT JOIN (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
-group by nys_health_operation_id, county) as dsa2
-      ON dsa.county = dsa2.county AND dsa.vi < dsa2.vi
-WHERE dsa2.vi is NULL
+    FROM (select county,operation_name,food_service_inspections.nys_health_operation_id, count(violation_item) as vi from food_service_inspections, food_service_operator
+    where food_service_operator.nys_health_operation_id = food_service_inspections.nys_health_operation_id
+    group by food_service_inspections.nys_health_operation_id, county, operation_name) as dsa
+    LEFT JOIN (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
+    group by nys_health_operation_id, county) as dsa2
+        ON dsa.county = dsa2.county AND dsa.vi < dsa2.vi
+    WHERE dsa2.vi is NULL;
     """
     cursor.execute(query)
     print(pandas.DataFrame(cursor.fetchall()))
