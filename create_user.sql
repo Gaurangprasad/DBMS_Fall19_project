@@ -1,0 +1,1 @@
+ALTER USER itws_final with password 'itws_final'

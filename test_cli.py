@@ -8,6 +8,7 @@ import warnings
 import argparse
 import itertools
 from psql_structure import FoodViolationData
+from psql_interface import PSQLInterfaceClass
 from json_structure import InsuranceData
 import psycopg2
 import psycopg2.extras
@@ -32,45 +33,54 @@ def validateInteger(inputIntString):
         print("^ Not an Integer value.")
         return False
     
+def validateYear(inputYearString):
+    if(validateInteger(inputYearString) == False):
+        return False
+    else:
+        if(int(inputYearString) < 0):
+            print("Enter valid year.")
+            return False
+        else:
+            return True
 
 def query1():
-    #Demonstrates a basic join and the IN operator"
+    # Basic join and using IN operator
+    print("1. Where can I get some alcohol around me?")
+    print("Search for liquor stores in a specific county and by specific liquor license(s)")
+    print()
     county = input('Enter county: ')
-    license_string = input('Enter license codes separated by a space:')
+    viewAllCode = input('Do you want to see the list of all liquor license codes? Enter True or False: ')
+    if(viewAllCode.casefold() == "true"):
+        print(tabulate(psql_interface.viewAllLiquorCodes(), headers=["License Type Code","License Class Code","License Type Name"], tablefmt='fancy_grid'))
+    print()
+    license_string = input('Enter license codes separated by a space: ')
     # Sample values for breweries - 'D','MI','CF'
-    lic_arr = license_string.split()
-    query = """select premise_name,doing_business_as,address,zipcode, license_type_name from liquor_license, license_types where county ilike %s AND liquor_license.license_type_code = license_types.license_type_code AND license_types.license_type_code IN %s"""
-    cursor.execute(query, (county, tuple(lic_arr)))
-    print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["Premise Name","Also Advertised As","Address","ZipCode", "License Type" ], tablefmt='fancy_grid'))
+    lic_arr = license_string.upper().split()
+    params = (county, tuple(lic_arr))
+    outputDF = psql_interface.query1(params)
+    
+    print(tabulate(outputDF, headers=["Premise Name","Also Advertised As","Address","ZipCode", "License Type" ], tablefmt='fancy_grid'))
 
 def query2():
-    start_date = input('Enter start date (YYYY-MM-DD):')
+    print("2. Food operators that are permitted to serve alcohol and have food service violations")
+    print("Search for food operators in a specific county that hold a liquor license and have food service violations in a specific date range.")
+    print()
+    print("Provide date range (start date, end date)")
+    start_date = input('Enter start date (YYYY-MM-DD): ')
     if(validate(start_date) == False):
         print("Invalid date")
         return
-    end_date = input('Enter end date (YYYY-MM-DD):')
+    end_date = input('Enter end date (YYYY-MM-DD): ')
     if(validate(end_date) == False):
         print("Invalid date")
         return
-    query = """select liquor_license.doing_business_as, food_service_violations.violation_description,liquor_license.county,date_of_inspection
-                        from food_service_operator,
-                            liquor_license,
-                            food_service_inspections,
-                            food_service_violations
-                        WHERE
-                        food_service_operator.operation_name = liquor_license.premise_name
-                        AND
-                        food_service_operator.nys_health_operation_id = food_service_inspections.nys_health_operation_id
-                        AND
-                        food_service_inspections.violation_item NOT IN ('None')
-                        AND
-                        food_service_inspections.date_of_inspection >= %s AND
-                            food_service_inspections.date_of_inspection <= %s
-                        AND
-                        food_service_violations.violation_item = food_service_inspections.violation_item
-                        """
-    cursor.execute(query, (start_date, end_date))
-    print(pandas.DataFrame(cursor.fetchall()))
+    county = input('Enter county: ')
+    params = (start_date, end_date, county)
+    outputDF = psql_interface.query2(params)
+    print()
+    print()
+    # Standard pandas DF output looks way better than the tabulate for this
+    print(outputDF)
 
 
 
@@ -85,56 +95,45 @@ def query3():
         return
 
     yearOfArrest = input('Adult Arrests Year: ')
-    if(validateInteger(yearOfArrest) == False):
+    if(validateYear(yearOfArrest) == False):
         return
     
-    minViolations = input('Min Violations: ')
+    minViolations = input('Minimum number of Violations: ')
     if(validateInteger(minViolations) == False):
         return
     
+    viewAllCode = input('Do you want to see all types of food violations? Enter True or False ')
+    
+    print()
+    print()
+    print()
+    if(viewAllCode.casefold() == "true"):
+        print(tabulate(psql_interface.viewAllFoodViolations(), headers=["Index","Violation Code", "Violation Description" ]))
+    print()
+    
     license_string = input('Enter violation codes separated by a space: ')
-    lic_arr = license_string.split()
+    lic_arr = license_string.upper().split()
     
     #  '14A','12E','1B','8F','3B','23','62'
-    query = """
-        select csm.county, cs, property_misdemanors  from (select county,sum(total_critical_violations+ total_critical_violations) as cs
-        from food_service_inspections
-        where
-        total_critical_violations + total_noncritical_violations > %s
-        AND
-        date_of_inspection between %s AND %s
-        AND
-        violation_item IN %s
-        GROUP BY county) as csm, (select county, sum(property_misdemeanor) as property_misdemanors from adult_arrests
-        where year = %s
-        group by county
-        ) as ad
-        where upper(csm.county) = upper(ad.county)
-        """
-
-    cursor.execute(query, (minViolations, start_date, end_date, tuple(lic_arr), yearOfArrest))
-    print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["County","Total Violations", "Property Misdemeanors" ], tablefmt='fancy_grid'))
+    params = (minViolations, start_date, end_date, tuple(lic_arr), yearOfArrest)
+    
+    outputDF = psql_interface.query3(params)
+    print()
+    print()
+    print(tabulate(outputDF, headers=["County","Total Violations", "Property Misdemeanors" ], tablefmt='fancy_grid'))
 
 
 def query4():
-    query = """
-    SELECT dsa.*
-    FROM (select county,operation_name,food_service_inspections.nys_health_operation_id, count(violation_item) as vi from food_service_inspections, food_service_operator
-    where food_service_operator.nys_health_operation_id = food_service_inspections.nys_health_operation_id
-    group by food_service_inspections.nys_health_operation_id, county, operation_name) as dsa
-    LEFT JOIN (select county,nys_health_operation_id, count(violation_item) as vi from food_service_inspections
-    group by nys_health_operation_id, county) as dsa2
-        ON dsa.county = dsa2.county AND dsa.vi < dsa2.vi
-    WHERE dsa2.vi is NULL
-    ORDER BY dsa.county ASC ;
-    """
-    cursor.execute(query)
-    print(tabulate(pandas.DataFrame(cursor.fetchall()), headers=["County","Operation Name", "NYS ID", "Total Violations"], tablefmt='fancy_grid'))
+    outputDF = psql_interface.query4()
+    # Pretty printing
+    print(tabulate(outputDF, headers=["County","Operation Name", "NYS ID", "Total Violations"], tablefmt='fancy_grid'))
 
     
 def query5():
 
     searchRegionType = input("Do you wanna search by county (ex: Albany) or region (ex: Capital Region)? Enter 'county' or 'region': ")
+    
+    # Using Mongo interface to create a query string that we can eval() later
     baseQuery = "ins.query()"
     if(searchRegionType.casefold() == "county"):
         baseQuery = baseQuery + ".county("
@@ -148,16 +147,11 @@ def query5():
     baseQuery = baseQuery + "'{}')"
             
     year = input("Enter year: ")
-    if(validateInteger(year) == False):
+    if(validateYear(year) == False):
         return
     else:
         year = int(year)
-        if year < 1:
-            print('Invalid year')
-            return
-        elif year > 2019:
-            print('Invalid year')
-            return
+       
     baseQuery = baseQuery + ".year({})"
     
     month = input("Enter month number: ")
@@ -181,10 +175,13 @@ def query5():
     
 def query6():
     county = input("Enter county: ")
-    year = int(input("Enter year: "))
-    query = "select * from adult_arrests where county ilike %s and year = %s"
-    cursor.execute(query, (county, year))
-    adultArrdf =  pandas.DataFrame(cursor.fetchall())
+    year = input("Enter year: ")
+    if(validateYear(year) == False):
+        return
+    else:
+        year = int(year)
+    params = (county, year)
+    adultArrestDF =  psql_interface.query6(params)
     jsonDF = ins.query().county(county).year(year).run()
     jsonDF = jsonDF.groupby(['County'])['County', 'Beneficiaries', 'Benefits'].sum()
     #combinedDF = adultArrdf.assign(Beneficiaries = [jsonDF.loc])
@@ -194,7 +191,7 @@ def query6():
     #adultArrdf['Total Benefits'] = jsonDF.loc[jsonDF['County'] == adultArrdf['0']]['Benefits']
     #print(adultArrdf.head())
     #print(jsonDF)
-    print(adultArrdf)
+    print(adultArrestDF)
     print(jsonDF)
 
 
@@ -204,7 +201,8 @@ if __name__ == "__main__":
     arg = argparse.ArgumentParser()
     conn = psycopg2.connect("host='localhost' dbname='test5' user='test5' password='test5'")
     cursor = conn.cursor()
-    fd_vio = FoodViolationData("host='localhost' dbname='test5' user='test5' password='test5'")
+    #fd_vio = FoodViolationData("host='localhost' dbname='test5' user='test5' password='test5'")
+    psql_interface = PSQLInterfaceClass("host='localhost' dbname='test5' user='test5' password='test5'")
     ins = InsuranceData()
     #print(ins.is_connected())
     arg.add_argument("--view",
@@ -218,7 +216,7 @@ if __name__ == "__main__":
         print()
         print()
         print("1. Where can I get some alcohol around me?")
-        print("2. Restaurants that are permitted to serve alcohol and have food service violations")
+        print("2. Which pubs have received food service violations?")
         print("3. Is there a relation between bad food and property misdemeanor?")
         print("4. Who consistently causes 3am tummy aches?")
         print("5. Explore unemployment around you.")
